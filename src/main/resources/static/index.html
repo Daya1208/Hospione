@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Hospione Hospital Management System</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        🏥 Hospione
+    </div>
+
+    <nav>
+        <
+
+        <button onclick="showPage('dashboard')">
+            🏠 Dashboard
+        </button>
+
+        <button onclick="showPage('patients')">
+            👥 Patients
+        </button>
+
+        <button onclick="showPage('doctors')">
+            👨‍⚕️ Doctors
+        </button>
+
+        <button onclick="showPage('departments')">
+            🏥 Departments
+        </button>
+
+        <button onclick="showPage('appointments')">
+            📅 Appointments
+        </button>
+
+    </nav>
+
+</aside>
+
+
+<!-- MAIN CONTENT -->
+
+<main class="main">
+
+    <!-- TOP BAR -->
+
+    <header class="topbar">
+
+        <h1>Hospione Hospital</h1>
+
+        <div>
+            Admin
+        </div>
+
+    </header>
+
+
+    <!-- DASHBOARD -->
+
+    <section id="dashboard" class="page">
+
+        <h2>Dashboard</h2>
+
+        <p class="welcome">
+            Welcome to Hospione Hospital Management System
+        </p>
+
+
+        <div class="cards">
+
+            <div class="card">
+
+                <h3>👥 Patients</h3>
+
+                <p id="patientCount">
+                    0
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>👨‍⚕️ Doctors</h3>
+
+                <p id="doctorCount">
+                    0
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>🏥 Departments</h3>
+
+                <p id="departmentCount">
+                    0
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>📅 Appointments</h3>
+
+                <p id="appointmentCount">
+                    0
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PATIENTS -->
+
+    <section id="patients" class="page hidden">
+
+        <h2>Patient Management</h2>
+
+
+        <div class="form-card">
+
+            <h3>Add New Patient</h3>
+
+            <form id="patientForm">
+
+                <input
+                    type="text"
+                    id="patientName"
+                    placeholder="Patient Name"
+                    required
+                >
+
+                <input
+                    type="number"
+                    id="patientAge"
+                    placeholder="Age"
+                    required
+                >
+
+                <select id="patientGender" required>
+
+                    <option value="">
+                        Select Gender
+                    </option>
+
+                    <option value="Male">
+                        Male
+                    </option>
+
+                    <option value="Female">
+                        Female
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+
+                <input
+                    type="email"
+                    id="patientEmail"
+                    placeholder="Email"
+                >
+
+
+                <input
+                    type="text"
+                    id="patientPhone"
+                    placeholder="Phone"
+                    required
+                >
+
+
+                <input
+                    type="text"
+                    id="patientAddress"
+                    placeholder="Address"
+                >
+
+
+                <select id="patientBloodGroup">
+
+                    <option value="">
+                        Blood Group
+                    </option>
+
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+
+                </select>
+
+
+                <button type="submit">
+                    Add Patient
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <div class="table-card">
+
+            <h3>Patient List</h3>
+
+            <table>
+
+                <thead>
+
+                <tr>
+
+                    <th>ID</th>
+
+                    <th>Name</th>
+
+                    <th>Age</th>
+
+                    <th>Gender</th>
+
+                    <th>Email</th>
+
+                    <th>Phone</th>
+
+                    <th>Blood Group</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+                </thead>
+
+
+                <tbody id="patientTable">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- DOCTORS -->
+
+   <!-- DOCTORS -->
+
+<section id="doctors" class="page hidden">
+
+    <h2>Doctor Management</h2>
+
+    <!-- ADD DOCTOR -->
+
+    <div class="form-card">
+
+        <h3>Add New Doctor</h3>
+
+        <form id="doctorForm">
+
+            <input
+                type="text"
+                id="doctorName"
+                placeholder="Doctor Name"
+                required
+            >
+
+            <input
+                type="email"
+                id="doctorEmail"
+                placeholder="Email"
+                required
+            >
+
+            <input
+                type="text"
+                id="doctorPhone"
+                placeholder="Phone"
+                required
+            >
+
+            <input
+                type="text"
+                id="doctorSpecialization"
+                placeholder="Specialization"
+                required
+            >
+
+            <input
+                type="text"
+                id="doctorQualification"
+                placeholder="Qualification"
+                required
+            >
+
+            <select id="doctorDepartment" required>
+
+                <option value="">
+                    Select Department
+                </option>
+
+            </select>
+
+            <button type="submit">
+                Add Doctor
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- DOCTOR TABLE -->
+
+    <div class="table-card">
+
+        <h3>Doctor List</h3>
+
+        <table>
+
+            <thead>
+
+            <tr>
+
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Specialization</th>
+                <th>Qualification</th>
+                <th>Department</th>
+                <th>Action</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody id="doctorTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+    <!-- DEPARTMENTS -->
+
+<section id="departments" class="page hidden">
+
+    <h2>Department Management</h2>
+
+
+    <!-- ADD DEPARTMENT -->
+
+    <div class="form-card">
+
+        <h3>Add New Department</h3>
+
+        <form id="departmentForm">
+
+            <input
+                type="text"
+                id="departmentName"
+                placeholder="Department Name"
+                required
+            >
+
+            <input
+                type="text"
+                id="departmentDescription"
+                placeholder="Description"
+                required
+            >
+
+            <button type="submit">
+                Add Department
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- DEPARTMENT TABLE -->
+
+    <div class="table-card">
+
+        <h3>Department List</h3>
+
+        <table>
+
+            <thead>
+
+            <tr>
+
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Action</th>
+
+            </tr>
+
+            </thead>
+
+
+            <tbody id="departmentTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+   <!-- APPOINTMENTS -->
+
+<section id="appointments" class="page hidden">
+
+    <h2>Appointment Management</h2>
+
+
+    <!-- BOOK APPOINTMENT -->
+
+    <div class="form-card">
+
+        <h3>Book New Appointment</h3>
+
+        <form id="appointmentForm">
+
+
+            <!-- PATIENT -->
+
+            <select
+                id="appointmentPatient"
+                required
+            >
+
+                <option value="">
+                    Select Patient
+                </option>
+
+            </select>
+
+
+            <!-- DOCTOR -->
+
+            <select
+                id="appointmentDoctor"
+                required
+            >
+
+                <option value="">
+                    Select Doctor
+                </option>
+
+            </select>
+
+
+            <!-- DATE -->
+
+            <input
+                type="date"
+                id="appointmentDate"
+                required
+            >
+
+
+            <!-- TIME -->
+
+            <input
+                type="time"
+                id="appointmentTime"
+                required
+            >
+
+
+            <!-- REASON -->
+
+            <input
+                type="text"
+                id="appointmentReason"
+                placeholder="Reason for visit"
+                required
+            >
+
+
+            <!-- STATUS -->
+
+            <select
+                id="appointmentStatus"
+            >
+
+                <option value="BOOKED">
+                    BOOKED
+                </option>
+
+                <option value="CONFIRMED">
+                    CONFIRMED
+                </option>
+
+                <option value="CANCELLED">
+                    CANCELLED
+                </option>
+
+                <option value="COMPLETED">
+                    COMPLETED
+                </option>
+
+            </select>
+
+
+            <button type="submit">
+                Book Appointment
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- APPOINTMENT LIST -->
+
+    <div class="table-card">
+
+        <h3>Appointment List</h3>
+
+        <table>
+
+            <thead>
+
+            <tr>
+
+                <th>ID</th>
+
+                <th>Patient</th>
+
+                <th>Doctor</th>
+
+                <th>Date</th>
+
+                <th>Time</th>
+
+                <th>Reason</th>
+
+                <th>Status</th>
+
+                <th>Action</th>
+
+            </tr>
+
+            </thead>
+
+
+            <tbody id="appointmentTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<script src="app.js"></script>
+
+</body>
+
+</html>
