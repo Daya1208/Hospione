@@ -885,9 +885,10 @@ async function loadAppointmentPatients() {
 
     try {
 
-        const response =
-            await fetch(`${API_URL}/patients`);
-
+       const response =
+    await fetch("/api/appointments", {
+        method: "GET"
+    });
         const patients =
             await response.json();
 
@@ -943,8 +944,9 @@ async function loadAppointmentDoctors() {
     try {
 
         const response =
-            await fetch(`${API_URL}/doctors`);
-
+    await fetch("/api/appointments", {
+        method: "GET"
+    });
         const doctors =
             await response.json();
 
@@ -999,10 +1001,10 @@ async function loadAppointments() {
 
     try {
 
-        const response =
-            await fetch(`${API_URL}/appointments`);
-
-
+      const response =
+    await fetch("/api/appointments", {
+        method: "GET"
+    });
         const appointments =
             await response.json();
 
