@@ -882,116 +882,64 @@ async function deleteDoctor(id) {
 // ======================================
 
 async function loadAppointmentPatients() {
-
     try {
-
-       const response =
-    await fetch("/api/appointments", {
-        method: "GET"
-    });
-        const patients =
-            await response.json();
-
-
-        const select =
-            document.getElementById(
-                "appointmentPatient"
-            );
-
-
-        select.innerHTML = `
-            <option value="">
-                Select Patient
-            </option>
-        `;
-
-
-        patients.forEach(patient => {
-
-            const option =
-                document.createElement("option");
-
-
-            option.value =
-                patient.id;
-
-
-            option.textContent =
-                `${patient.name} - ${patient.phone}`;
-
-
-            select.appendChild(option);
-
+        const response = await fetch("/api/patients", {
+            method: "GET"
         });
 
+        const patients = await response.json();
+
+        const select = document.getElementById("appointmentPatient");
+
+        select.innerHTML = `
+            <option value="">Select Patient</option>
+        `;
+
+        patients.forEach(patient => {
+            const option = document.createElement("option");
+
+            option.value = patient.id;
+            option.textContent = `${patient.name} - ${patient.phone}`;
+
+            select.appendChild(option);
+        });
 
     } catch (error) {
-
-        console.error(
-            "Patient dropdown error:",
-            error
-        );
-
+        console.error("Patient dropdown error:", error);
     }
-
 }
+
 // ======================================
 // APPOINTMENT DOCTOR DROPDOWN
 // ======================================
 
 async function loadAppointmentDoctors() {
-
     try {
+        const response = await fetch("/api/doctors", {
+            method: "GET"
+        });
 
-        const response =
-    await fetch("/api/appointments", {
-        method: "GET"
-    });
-        const doctors =
-            await response.json();
+        const doctors = await response.json();
 
-
-        const select =
-            document.getElementById(
-                "appointmentDoctor"
-            );
-
+        const select = document.getElementById("appointmentDoctor");
 
         select.innerHTML = `
-            <option value="">
-                Select Doctor
-            </option>
+            <option value="">Select Doctor</option>
         `;
 
-
         doctors.forEach(doctor => {
+            const option = document.createElement("option");
 
-            const option =
-                document.createElement("option");
-
-
-            option.value =
-                doctor.id;
-
-
+            option.value = doctor.id;
             option.textContent =
                 `${doctor.name} - ${doctor.specialization}`;
 
-
             select.appendChild(option);
-
         });
 
-
     } catch (error) {
-
-        console.error(
-            "Doctor dropdown error:",
-            error
-        );
-
+        console.error("Doctor dropdown error:", error);
     }
-
 }
 // ======================================
 // LOAD APPOINTMENTS
