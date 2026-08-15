@@ -1,14 +1,8 @@
-const response = await fetch("/api/appointments", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify(appointmentData)
-});
+const API_URL = "/api";
 
-// ===============================
+// =====================================================
 // PAGE NAVIGATION
-// ===============================
+// =====================================================
 
 function showPage(pageId) {
 
@@ -18,89 +12,103 @@ function showPage(pageId) {
         page.classList.add("hidden");
     });
 
-    document
-        .getElementById(pageId)
-        .classList.remove("hidden");
+    const page = document.getElementById(pageId);
 
+    if (page) {
+        page.classList.remove("hidden");
+    }
+
+    if (pageId === "dashboard") {
+        loadDashboard();
+    }
 
     if (pageId === "patients") {
         loadPatients();
     }
 
-
     if (pageId === "doctors") {
-
         loadDoctors();
-
         loadDepartmentOptions();
-
     }
-
 
     if (pageId === "departments") {
         loadDepartments();
     }
 
     if (pageId === "appointments") {
-
-    loadAppointments();
-
-    loadAppointmentPatients();
-
-    loadAppointmentDoctors();
-
-}
-
-
-    if (pageId === "dashboard") {
-        loadDashboard();
+        loadAppointments();
+        loadAppointmentPatients();
+        loadAppointmentDoctors();
     }
-
 }
 
-// ===============================
-// LOAD DASHBOARD
-// ===============================
+
+// =====================================================
+// DASHBOARD
+// =====================================================
 
 async function loadDashboard() {
 
     try {
 
-        const patients =
-            await fetch(`${API_URL}/patients`)
-                .then(response => response.json());
+        const patientsResponse =
+            await fetch(`${API_URL}/patients`);
 
+        const doctorsResponse =
+            await fetch(`${API_URL}/doctors`);
+
+        const departmentsResponse =
+            await fetch(`${API_URL}/departments`);
+
+        const appointmentsResponse =
+            await fetch(`${API_URL}/appointments`);
+
+
+        const patients =
+            await patientsResponse.json();
 
         const doctors =
-            await fetch(`${API_URL}/doctors`)
-                .then(response => response.json());
-
+            await doctorsResponse.json();
 
         const departments =
-            await fetch(`${API_URL}/departments`)
-                .then(response => response.json());
-
+            await departmentsResponse.json();
 
         const appointments =
-            await fetch(`${API_URL}/appointments`)
-                .then(response => response.json());
+            await appointmentsResponse.json();
 
 
-        document.getElementById("patientCount")
-            .textContent = patients.length;
+        const patientCount =
+            document.getElementById("patientCount");
+
+        const doctorCount =
+            document.getElementById("doctorCount");
+
+        const departmentCount =
+            document.getElementById("departmentCount");
+
+        const appointmentCount =
+            document.getElementById("appointmentCount");
 
 
-        document.getElementById("doctorCount")
-            .textContent = doctors.length;
+        if (patientCount) {
+            patientCount.textContent =
+                patients.length;
+        }
 
+        if (doctorCount) {
+            doctorCount.textContent =
+                doctors.length;
+        }
 
-        document.getElementById("departmentCount")
-            .textContent = departments.length;
+        if (departmentCount) {
+            departmentCount.textContent =
+                departments.length;
+        }
 
-
-        document.getElementById("appointmentCount")
-            .textContent = appointments.length;
-
+        if (appointmentCount) {
+            appointmentCount.textContent =
+                appointments.length;
+        }
 
     } catch (error) {
 
@@ -108,14 +116,13 @@ async function loadDashboard() {
             "Dashboard Error:",
             error
         );
-
     }
 }
 
 
-// ===============================
-// LOAD PATIENTS
-// ===============================
+// =====================================================
+// PATIENTS
+// =====================================================
 
 async function loadPatients() {
 
@@ -124,14 +131,23 @@ async function loadPatients() {
         const response =
             await fetch(`${API_URL}/patients`);
 
+        if (!response.ok) {
+            throw new Error(
+                "Unable to load patients"
+            );
+        }
 
         const patients =
             await response.json();
 
-
         const table =
-            document.getElementById("patientTable");
+            document.getElementById(
+                "patientTable"
+            );
 
+        if (!table) {
+            return;
+        }
 
         table.innerHTML = "";
 
@@ -146,15 +162,15 @@ async function loadPatients() {
 
                 <td>${patient.id}</td>
 
-                <td>${patient.name}</td>
+                <td>${patient.name || ""}</td>
 
-                <td>${patient.age}</td>
+                <td>${patient.age || ""}</td>
 
-                <td>${patient.gender}</td>
+                <td>${patient.gender || ""}</td>
 
                 <td>${patient.email || ""}</td>
 
-                <td>${patient.phone}</td>
+                <td>${patient.phone || ""}</td>
 
                 <td>${patient.bloodGroup || ""}</td>
 
@@ -162,10 +178,9 @@ async function loadPatients() {
 
                     <button
                         class="delete-btn"
-                        onclick="deletePatient(${patient.id})">
-
+                        onclick="deletePatient(${patient.id})"
+                    >
                         Delete
-
                     </button>
 
                 </td>
@@ -177,140 +192,159 @@ async function loadPatients() {
 
         });
 
-
     } catch (error) {
 
         console.error(
             "Patient Loading Error:",
             error
         );
-
     }
-
 }
 
 
-// ===============================
+// =====================================================
 // ADD PATIENT
-// ===============================
+// =====================================================
 
-document
-    .getElementById("patientForm")
-    .addEventListener("submit", async function(event) {
-
-        event.preventDefault();
+const patientForm =
+    document.getElementById("patientForm");
 
 
-        const patient = {
+if (patientForm) {
 
-            name:
-                document
-                    .getElementById("patientName")
-                    .value,
+    patientForm.addEventListener(
+        "submit",
+        async function(event) {
 
-            age:
-                Number(
+            event.preventDefault();
+
+
+            const patient = {
+
+                name:
                     document
-                        .getElementById("patientAge")
+                        .getElementById(
+                            "patientName"
+                        )
+                        .value,
+
+                age:
+                    Number(
+                        document
+                            .getElementById(
+                                "patientAge"
+                            )
+                            .value
+                    ),
+
+                gender:
+                    document
+                        .getElementById(
+                            "patientGender"
+                        )
+                        .value,
+
+                email:
+                    document
+                        .getElementById(
+                            "patientEmail"
+                        )
+                        .value,
+
+                phone:
+                    document
+                        .getElementById(
+                            "patientPhone"
+                        )
+                        .value,
+
+                address:
+                    document
+                        .getElementById(
+                            "patientAddress"
+                        )
+                        .value,
+
+                bloodGroup:
+                    document
+                        .getElementById(
+                            "patientBloodGroup"
+                        )
                         .value
-                ),
-
-            gender:
-                document
-                    .getElementById("patientGender")
-                    .value,
-
-            email:
-                document
-                    .getElementById("patientEmail")
-                    .value,
-
-            phone:
-                document
-                    .getElementById("patientPhone")
-                    .value,
-
-            address:
-                document
-                    .getElementById("patientAddress")
-                    .value,
-
-            bloodGroup:
-                document
-                    .getElementById("patientBloodGroup")
-                    .value
-
-        };
+            };
 
 
-        try {
+            try {
 
-            const response =
-                await fetch(`${API_URL}/patients`, {
+                const response =
+                    await fetch(
+                        `${API_URL}/patients`,
+                        {
+                            method: "POST",
 
-                    method: "POST",
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify(patient)
-
-                });
+                            body:
+                                JSON.stringify(
+                                    patient
+                                )
+                        }
+                    );
 
 
-            if (!response.ok) {
+                if (!response.ok) {
 
-                throw new Error(
-                    "Failed to add patient"
+                    const errorText =
+                        await response.text();
+
+                    throw new Error(
+                        errorText ||
+                        "Failed to add patient"
+                    );
+                }
+
+
+                alert(
+                    "Patient added successfully!"
                 );
 
+
+                patientForm.reset();
+
+                loadPatients();
+
+                loadDashboard();
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    "Error adding patient: " +
+                    error.message
+                );
             }
-
-
-            alert(
-                "Patient added successfully!"
-            );
-
-
-            document
-                .getElementById("patientForm")
-                .reset();
-
-
-            loadPatients();
-
-
-            loadDashboard();
-
-
-        } catch (error) {
-
-            console.error(error);
-
-            alert(
-                "Error adding patient"
-            );
-
         }
+    );
+}
 
-    });
 
-
-// ===============================
+// =====================================================
 // DELETE PATIENT
-// ===============================
+// =====================================================
 
 async function deletePatient(id) {
 
-    if (!confirm(
-        "Are you sure you want to delete this patient?"
-    )) {
-
+    if (
+        !confirm(
+            "Are you sure you want to delete this patient?"
+        )
+    ) {
         return;
-
     }
 
 
@@ -330,7 +364,6 @@ async function deletePatient(id) {
             throw new Error(
                 "Delete failed"
             );
-
         }
 
 
@@ -351,40 +384,46 @@ async function deletePatient(id) {
         alert(
             "Error deleting patient"
         );
-
     }
-
 }
 
 
-// ===============================
-// INITIAL LOAD
-// ===============================
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function() {
-
-        loadDashboard();
-
-    }
-);
-// ======================================
+// =====================================================
 // DEPARTMENTS
-// ======================================
+// =====================================================
 
 async function loadDepartments() {
 
     try {
 
         const response =
-            await fetch(`${API_URL}/departments`);
+            await fetch(
+                `${API_URL}/departments`
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load departments"
+            );
+        }
+
 
         const departments =
             await response.json();
 
+
         const table =
-            document.getElementById("departmentTable");
+            document.getElementById(
+                "departmentTable"
+            );
+
+
+        if (!table) {
+            return;
+        }
+
 
         table.innerHTML = "";
 
@@ -397,20 +436,25 @@ async function loadDepartments() {
 
             row.innerHTML = `
 
-                <td>${department.id}</td>
+                <td>
+                    ${department.id}
+                </td>
 
-                <td>${department.name}</td>
+                <td>
+                    ${department.name || ""}
+                </td>
 
-                <td>${department.description || ""}</td>
+                <td>
+                    ${department.description || ""}
+                </td>
 
                 <td>
 
                     <button
                         class="delete-btn"
-                        onclick="deleteDepartment(${department.id})">
-
+                        onclick="deleteDepartment(${department.id})"
+                    >
                         Delete
-
                     </button>
 
                 </td>
@@ -429,104 +473,120 @@ async function loadDepartments() {
             "Department loading error:",
             error
         );
-
     }
-
 }
-// ======================================
+
+
+// =====================================================
 // ADD DEPARTMENT
-// ======================================
+// =====================================================
 
-document
-    .getElementById("departmentForm")
-    .addEventListener("submit", async function(event) {
-
-        event.preventDefault();
-
-
-        const department = {
-
-            name:
-                document
-                    .getElementById("departmentName")
-                    .value,
-
-            description:
-                document
-                    .getElementById("departmentDescription")
-                    .value
-
-        };
+const departmentForm =
+    document.getElementById(
+        "departmentForm"
+    );
 
 
-        try {
+if (departmentForm) {
 
-            const response =
-                await fetch(
-                    `${API_URL}/departments`,
-                    {
+    departmentForm.addEventListener(
+        "submit",
+        async function(event) {
 
-                        method: "POST",
+            event.preventDefault();
 
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
 
-                        body:
-                            JSON.stringify(department)
+            const department = {
 
-                    }
+                name:
+                    document
+                        .getElementById(
+                            "departmentName"
+                        )
+                        .value,
+
+                description:
+                    document
+                        .getElementById(
+                            "departmentDescription"
+                        )
+                        .value
+            };
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_URL}/departments`,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    department
+                                )
+                        }
+                    );
+
+
+                if (!response.ok) {
+
+                    const errorText =
+                        await response.text();
+
+                    throw new Error(
+                        errorText ||
+                        "Department creation failed"
+                    );
+                }
+
+
+                alert(
+                    "Department added successfully!"
                 );
 
 
-            if (!response.ok) {
+                departmentForm.reset();
 
-                throw new Error(
-                    "Department creation failed"
+                loadDepartments();
+
+                loadDepartmentOptions();
+
+                loadDashboard();
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    "Error adding department: " +
+                    error.message
                 );
-
             }
-
-
-            alert(
-                "Department added successfully!"
-            );
-
-
-            document
-                .getElementById("departmentForm")
-                .reset();
-
-
-            loadDepartments();
-
-            loadDashboard();
-
-
-        } catch (error) {
-
-            console.error(error);
-
-            alert(
-                "Error adding department"
-            );
-
         }
+    );
+}
 
-    });
-    // ======================================
+
+// =====================================================
 // DELETE DEPARTMENT
-// ======================================
+// =====================================================
 
 async function deleteDepartment(id) {
 
-    if (!confirm(
-        "Are you sure you want to delete this department?"
-    )) {
-
+    if (
+        !confirm(
+            "Are you sure you want to delete this department?"
+        )
+    ) {
         return;
-
     }
 
 
@@ -546,7 +606,6 @@ async function deleteDepartment(id) {
             throw new Error(
                 "Delete failed"
             );
-
         }
 
 
@@ -556,6 +615,8 @@ async function deleteDepartment(id) {
 
 
         loadDepartments();
+
+        loadDepartmentOptions();
 
         loadDashboard();
 
@@ -567,20 +628,31 @@ async function deleteDepartment(id) {
         alert(
             "Error deleting department"
         );
-
     }
-
 }
-// ======================================
+
+
+// =====================================================
 // DEPARTMENT DROPDOWN
-// ======================================
+// =====================================================
 
 async function loadDepartmentOptions() {
 
     try {
 
         const response =
-            await fetch(`${API_URL}/departments`);
+            await fetch(
+                `${API_URL}/departments`
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load departments"
+            );
+        }
+
 
         const departments =
             await response.json();
@@ -590,6 +662,11 @@ async function loadDepartmentOptions() {
             document.getElementById(
                 "doctorDepartment"
             );
+
+
+        if (!select) {
+            return;
+        }
 
 
         select.innerHTML = `
@@ -602,7 +679,9 @@ async function loadDepartmentOptions() {
         departments.forEach(department => {
 
             const option =
-                document.createElement("option");
+                document.createElement(
+                    "option"
+                );
 
 
             option.value =
@@ -624,20 +703,31 @@ async function loadDepartmentOptions() {
             "Department dropdown error:",
             error
         );
-
     }
-
 }
-// ======================================
+
+
+// =====================================================
 // DOCTORS
-// ======================================
+// =====================================================
 
 async function loadDoctors() {
 
     try {
 
         const response =
-            await fetch(`${API_URL}/doctors`);
+            await fetch(
+                `${API_URL}/doctors`
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load doctors"
+            );
+        }
+
 
         const doctors =
             await response.json();
@@ -647,6 +737,11 @@ async function loadDoctors() {
             document.getElementById(
                 "doctorTable"
             );
+
+
+        if (!table) {
+            return;
+        }
 
 
         table.innerHTML = "";
@@ -660,17 +755,29 @@ async function loadDoctors() {
 
             row.innerHTML = `
 
-                <td>${doctor.id}</td>
+                <td>
+                    ${doctor.id}
+                </td>
 
-                <td>${doctor.name}</td>
+                <td>
+                    ${doctor.name || ""}
+                </td>
 
-                <td>${doctor.email}</td>
+                <td>
+                    ${doctor.email || ""}
+                </td>
 
-                <td>${doctor.phone}</td>
+                <td>
+                    ${doctor.phone || ""}
+                </td>
 
-                <td>${doctor.specialization}</td>
+                <td>
+                    ${doctor.specialization || ""}
+                </td>
 
-                <td>${doctor.qualification}</td>
+                <td>
+                    ${doctor.qualification || ""}
+                </td>
 
                 <td>
                     ${
@@ -684,10 +791,9 @@ async function loadDoctors() {
 
                     <button
                         class="delete-btn"
-                        onclick="deleteDoctor(${doctor.id})">
-
+                        onclick="deleteDoctor(${doctor.id})"
+                    >
                         Delete
-
                     </button>
 
                 </td>
@@ -706,138 +812,156 @@ async function loadDoctors() {
             "Doctor loading error:",
             error
         );
-
     }
-
 }
-// ======================================
+
+
+// =====================================================
 // ADD DOCTOR
-// ======================================
+// =====================================================
 
-document
-    .getElementById("doctorForm")
-    .addEventListener("submit", async function(event) {
-
-        event.preventDefault();
-
-
-        const departmentId =
-            document
-                .getElementById("doctorDepartment")
-                .value;
+const doctorForm =
+    document.getElementById(
+        "doctorForm"
+    );
 
 
-        const doctor = {
+if (doctorForm) {
 
-            name:
-                document
-                    .getElementById("doctorName")
-                    .value,
+    doctorForm.addEventListener(
+        "submit",
+        async function(event) {
 
-            email:
-                document
-                    .getElementById("doctorEmail")
-                    .value,
+            event.preventDefault();
 
-            phone:
-                document
-                    .getElementById("doctorPhone")
-                    .value,
 
-            specialization:
+            const departmentId =
                 document
                     .getElementById(
-                        "doctorSpecialization"
+                        "doctorDepartment"
                     )
-                    .value,
-
-            qualification:
-                document
-                    .getElementById(
-                        "doctorQualification"
-                    )
-                    .value,
-
-            department: {
-
-                id:
-                    Number(departmentId)
-
-            }
-
-        };
+                    .value;
 
 
-        try {
+            const doctor = {
 
-            const response =
-                await fetch(
-                    `${API_URL}/doctors`,
-                    {
+                name:
+                    document
+                        .getElementById(
+                            "doctorName"
+                        )
+                        .value,
 
-                        method: "POST",
+                email:
+                    document
+                        .getElementById(
+                            "doctorEmail"
+                        )
+                        .value,
 
-                        headers: {
+                phone:
+                    document
+                        .getElementById(
+                            "doctorPhone"
+                        )
+                        .value,
 
-                            "Content-Type":
-                                "application/json"
+                specialization:
+                    document
+                        .getElementById(
+                            "doctorSpecialization"
+                        )
+                        .value,
 
-                        },
+                qualification:
+                    document
+                        .getElementById(
+                            "doctorQualification"
+                        )
+                        .value,
 
-                        body:
-                            JSON.stringify(doctor)
+                department: {
+                    id:
+                        Number(
+                            departmentId
+                        )
+                }
+            };
 
-                    }
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_URL}/doctors`,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    doctor
+                                )
+                        }
+                    );
+
+
+                if (!response.ok) {
+
+                    const errorText =
+                        await response.text();
+
+                    throw new Error(
+                        errorText ||
+                        "Doctor creation failed"
+                    );
+                }
+
+
+                alert(
+                    "Doctor added successfully!"
                 );
 
 
-            if (!response.ok) {
+                doctorForm.reset();
 
-                throw new Error(
-                    "Doctor creation failed"
+                loadDoctors();
+
+                loadAppointmentDoctors();
+
+                loadDashboard();
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    "Error adding doctor: " +
+                    error.message
                 );
-
             }
-
-
-            alert(
-                "Doctor added successfully!"
-            );
-
-
-            document
-                .getElementById("doctorForm")
-                .reset();
-
-
-            loadDoctors();
-
-            loadDashboard();
-
-
-        } catch (error) {
-
-            console.error(error);
-
-            alert(
-                "Error adding doctor"
-            );
-
         }
+    );
+}
 
-    });
-    // ======================================
+
+// =====================================================
 // DELETE DOCTOR
-// ======================================
+// =====================================================
 
 async function deleteDoctor(id) {
 
-    if (!confirm(
-        "Are you sure you want to delete this doctor?"
-    )) {
-
+    if (
+        !confirm(
+            "Are you sure you want to delete this doctor?"
+        )
+    ) {
         return;
-
     }
 
 
@@ -857,7 +981,6 @@ async function deleteDoctor(id) {
             throw new Error(
                 "Delete failed"
             );
-
         }
 
 
@@ -867,6 +990,8 @@ async function deleteDoctor(id) {
 
 
         loadDoctors();
+
+        loadAppointmentDoctors();
 
         loadDashboard();
 
@@ -878,86 +1003,190 @@ async function deleteDoctor(id) {
         alert(
             "Error deleting doctor"
         );
-
     }
-
 }
-// ======================================
-// APPOINTMENT PATIENT DROPDOWN
-// ======================================
+
+
+// =====================================================
+// APPOINTMENT - PATIENT DROPDOWN
+// =====================================================
 
 async function loadAppointmentPatients() {
+
     try {
-        const response = await fetch("/api/patients", {
-            method: "GET"
-        });
 
-        const patients = await response.json();
+        // IMPORTANT:
+        // Patient dropdown uses /api/patients
+        // NOT /api/appointments
 
-        const select = document.getElementById("appointmentPatient");
+        const response =
+            await fetch(
+                `${API_URL}/patients`
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load patients"
+            );
+        }
+
+
+        const patients =
+            await response.json();
+
+
+        const select =
+            document.getElementById(
+                "appointmentPatient"
+            );
+
+
+        if (!select) {
+            return;
+        }
+
 
         select.innerHTML = `
-            <option value="">Select Patient</option>
+            <option value="">
+                Select Patient
+            </option>
         `;
+
 
         patients.forEach(patient => {
-            const option = document.createElement("option");
 
-            option.value = patient.id;
-            option.textContent = `${patient.name} - ${patient.phone}`;
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                patient.id;
+
+
+            option.textContent =
+                `${patient.name || ""} - ${patient.phone || ""}`;
+
 
             select.appendChild(option);
+
         });
 
+
     } catch (error) {
-        console.error("Patient dropdown error:", error);
+
+        console.error(
+            "Patient dropdown error:",
+            error
+        );
     }
 }
 
-// ======================================
-// APPOINTMENT DOCTOR DROPDOWN
-// ======================================
+
+// =====================================================
+// APPOINTMENT - DOCTOR DROPDOWN
+// =====================================================
 
 async function loadAppointmentDoctors() {
+
     try {
-        const response = await fetch("/api/doctors", {
-            method: "GET"
-        });
 
-        const doctors = await response.json();
+        // IMPORTANT:
+        // Doctor dropdown uses /api/doctors
+        // NOT /api/appointments
 
-        const select = document.getElementById("appointmentDoctor");
+        const response =
+            await fetch(
+                `${API_URL}/doctors`
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load doctors"
+            );
+        }
+
+
+        const doctors =
+            await response.json();
+
+
+        const select =
+            document.getElementById(
+                "appointmentDoctor"
+            );
+
+
+        if (!select) {
+            return;
+        }
+
 
         select.innerHTML = `
-            <option value="">Select Doctor</option>
+            <option value="">
+                Select Doctor
+            </option>
         `;
 
-        doctors.forEach(doctor => {
-            const option = document.createElement("option");
 
-            option.value = doctor.id;
+        doctors.forEach(doctor => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                doctor.id;
+
+
             option.textContent =
-                `${doctor.name} - ${doctor.specialization}`;
+                `${doctor.name || ""} - ${doctor.specialization || ""}`;
+
 
             select.appendChild(option);
+
         });
 
+
     } catch (error) {
-        console.error("Doctor dropdown error:", error);
+
+        console.error(
+            "Doctor dropdown error:",
+            error
+        );
     }
 }
-// ======================================
+
+
+// =====================================================
 // LOAD APPOINTMENTS
-// ======================================
+// =====================================================
 
 async function loadAppointments() {
 
     try {
 
-      const response =
-    await fetch("/api/appointments", {
-        method: "GET"
-    });
+        const response =
+            await fetch(
+                `${API_URL}/appointments`
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load appointments"
+            );
+        }
+
+
         const appointments =
             await response.json();
 
@@ -968,78 +1197,83 @@ async function loadAppointments() {
             );
 
 
+        if (!table) {
+            return;
+        }
+
+
         table.innerHTML = "";
 
 
-        appointments.forEach(appointment => {
+        appointments.forEach(
+            appointment => {
 
-            const row =
-                document.createElement("tr");
-
-
-            const patientName =
-                appointment.patient
-                    ? appointment.patient.name
-                    : "";
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
 
 
-            const doctorName =
-                appointment.doctor
-                    ? appointment.doctor.name
-                    : "";
+                const patientName =
+                    appointment.patient
+                        ? appointment.patient.name
+                        : "";
 
 
-            row.innerHTML = `
-
-                <td>
-                    ${appointment.id}
-                </td>
-
-                <td>
-                    ${patientName}
-                </td>
-
-                <td>
-                    ${doctorName}
-                </td>
-
-                <td>
-                    ${appointment.appointmentDate}
-                </td>
-
-                <td>
-                    ${appointment.appointmentTime}
-                </td>
-
-                <td>
-                    ${appointment.reason}
-                </td>
-
-                <td>
-                    ${appointment.status}
-                </td>
-
-                <td>
-
-                    <button
-                        class="delete-btn"
-                        onclick="
-                            deleteAppointment(
-                                ${appointment.id}
-                            )
-                        "
-                    >
-                        Delete
-                    </button>
-
-                </td>
-
-            `;
+                const doctorName =
+                    appointment.doctor
+                        ? appointment.doctor.name
+                        : "";
 
 
-            table.appendChild(row);
+                row.innerHTML = `
 
-        });
+                    <td>
+                        ${appointment.id || ""}
+                    </td>
+
+                    <td>
+                        ${patientName}
+                    </td>
+
+                    <td>
+                        ${doctorName}
+                    </td>
+
+                    <td>
+                        ${appointment.appointmentDate || ""}
+                    </td>
+
+                    <td>
+                        ${appointment.appointmentTime || ""}
+                    </td>
+
+                    <td>
+                        ${appointment.reason || ""}
+                    </td>
+
+                    <td>
+                        ${appointment.status || ""}
+                    </td>
+
+                    <td>
+
+                        <button
+                            class="delete-btn"
+                            onclick="deleteAppointment(${appointment.id})"
+                        >
+                            Delete
+                        </button>
+
+                    </td>
+
+                `;
+
+
+                table.appendChild(row);
+
+            }
+        );
 
 
     } catch (error) {
@@ -1048,17 +1282,23 @@ async function loadAppointments() {
             "Appointment loading error:",
             error
         );
-
     }
-
 }
-// ======================================
-// BOOK APPOINTMENT
-// ======================================
 
-document
-    .getElementById("appointmentForm")
-    .addEventListener(
+
+// =====================================================
+// BOOK APPOINTMENT
+// =====================================================
+
+const appointmentForm =
+    document.getElementById(
+        "appointmentForm"
+    );
+
+
+if (appointmentForm) {
+
+    appointmentForm.addEventListener(
         "submit",
         async function(event) {
 
@@ -1081,20 +1321,40 @@ document
                     .value;
 
 
+            // Make sure patient is selected
+
+            if (!patientId) {
+
+                alert(
+                    "Please select a patient."
+                );
+
+                return;
+            }
+
+
+            // Make sure doctor is selected
+
+            if (!doctorId) {
+
+                alert(
+                    "Please select a doctor."
+                );
+
+                return;
+            }
+
+
             const appointment = {
 
                 patient: {
-
                     id:
                         Number(patientId)
-
                 },
 
                 doctor: {
-
                     id:
                         Number(doctorId)
-
                 },
 
                 appointmentDate:
@@ -1124,30 +1384,32 @@ document
                             "appointmentStatus"
                         )
                         .value
-
             };
 
 
             try {
 
-                const response =
-                    await fetch("/api/appointment", 
-                        {
+                // =================================================
+                // IMPORTANT FIX
+                // Correct endpoint is /api/appointments
+                // NOT /api/appointment
+                // =================================================
 
+                const response =
+                    await fetch(
+                        `${API_URL}/appointments`,
+                        {
                             method: "POST",
 
                             headers: {
-
                                 "Content-Type":
                                     "application/json"
-
                             },
 
                             body:
                                 JSON.stringify(
                                     appointment
                                 )
-
                         }
                     );
 
@@ -1157,10 +1419,11 @@ document
                     const errorText =
                         await response.text();
 
-                    throw new Error(
-                        errorText
-                    );
 
+                    throw new Error(
+                        errorText ||
+                        "Failed to book appointment"
+                    );
                 }
 
 
@@ -1169,44 +1432,49 @@ document
                 );
 
 
-                document
-                    .getElementById(
-                        "appointmentForm"
-                    )
-                    .reset();
+                appointmentForm.reset();
 
 
                 loadAppointments();
 
                 loadDashboard();
 
+                loadAppointmentPatients();
+
+                loadAppointmentDoctors();
+
 
             } catch (error) {
 
-                console.error(error);
+                console.error(
+                    "Booking Error:",
+                    error
+                );
 
 
                 alert(
-                    "Error booking appointment: "
-                    + error.message
+                    "Error booking appointment: " +
+                    error.message
                 );
-
             }
 
         }
     );
-    // ======================================
+}
+
+
+// =====================================================
 // DELETE APPOINTMENT
-// ======================================
+// =====================================================
 
 async function deleteAppointment(id) {
 
-    if (!confirm(
-        "Are you sure you want to delete this appointment?"
-    )) {
-
+    if (
+        !confirm(
+            "Are you sure you want to delete this appointment?"
+        )
+    ) {
         return;
-
     }
 
 
@@ -1216,9 +1484,7 @@ async function deleteAppointment(id) {
             await fetch(
                 `${API_URL}/appointments/${id}`,
                 {
-
                     method: "DELETE"
-
                 }
             );
 
@@ -1228,7 +1494,6 @@ async function deleteAppointment(id) {
             throw new Error(
                 "Delete failed"
             );
-
         }
 
 
@@ -1246,11 +1511,22 @@ async function deleteAppointment(id) {
 
         console.error(error);
 
-
         alert(
             "Error deleting appointment"
         );
+    }
+}
+
+
+// =====================================================
+// INITIAL LOAD
+// =====================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        loadDashboard();
 
     }
-
-}
+);
